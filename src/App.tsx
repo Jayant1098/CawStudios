@@ -1,7 +1,9 @@
+import Navbar from "./components/Navbar"
+
 function App() {
   return (
     <div className="App">
-      <p className="bg-red-800">Recco</p>
+      <Navbar />
     </div>
   )
 }
