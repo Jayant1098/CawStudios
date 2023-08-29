@@ -6,26 +6,33 @@
     "datetime": "2021-01-22",
     "invoiceHref": "#",
     "total": "$238.00",
+    "supplier": "East Cost Fruits",
+    "shipping_date": "Thu, Feb 10",
+
     "products": [
       {
         "id": "1",
+        "quantity": "5",
         "brand": "Home Black",
         "name": "Machined Pen and Pencil Set",
         "href": "#",
         "price": "$70.00",
         "status": "Delivered Jan 25, 2021",
         "imageSrc": "https://tailwindui.com/img/ecommerce-images/order-history-page-02-product-01.jpg",
-        "imageAlt": "Detail of mechanical pencil tip with machined black steel shaft and chrome lead tip."
+        "imageAlt": "Detail of mechanical pencil tip with machined black steel shaft and chrome lead tip.",
+        "packageSize": "6*1LB"
       },
       {
         "id": "2",
+        "quantity": "2",
         "brand": "Home Black",
         "name": "Esperagus",
         "href": "#",
         "price": "$10.00",
         "status": "Delivered Jan 25, 2021",
         "imageSrc": "https://tailwindui.com/img/ecommerce-images/order-history-page-02-product-01.jpg",
-        "imageAlt": "Detail of mechanical pencil tip with machined black steel shaft and chrome lead tip."
+        "imageAlt": "Detail of mechanical pencil tip with machined black steel shaft and chrome lead tip.",
+        "packageSize": "6*1LB"
       }
     ]
   }
