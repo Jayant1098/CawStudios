@@ -2,27 +2,69 @@ import { useState } from "react"
 import OrderStatus from "./OrderStatus"
 import SearchBar from "./SearchBar"
 import OrderTable from "./OrderTable"
-import { Order } from "../redux/orderSlice"
+import { Order, updateProductState } from "../redux/orderSlice"
 import { PrinterIcon } from "@heroicons/react/24/outline"
+import { useAppDispatch } from "../redux/hooks"
+import { productStatus } from "../constants"
+import BottomPrompt from "./BottomPrompt"
 // import EditProduct from "./components/EditProduct"
 
-export default function OrderDetails({
-  order,
-  handleUpdateProductStatus,
-}: {
-  order: Order
-}) {
+export default function OrderDetails({ order }: { order: Order }) {
   const [currentlyEditingProductId, setCurrentlyEditingProductId] = useState<
     null | string
   >(null)
+  const [productToBeMarkedAsMissing, setProductToBeMarkedAsMissing] = useState<
+    null | string
+  >(null)
+  const dispatch = useAppDispatch()
+
+  const handleUpdateProductState = ({
+    productId,
+    productStatus,
+  }: {
+    productId: string
+    productStatus: number
+  }) => {
+    dispatch(
+      updateProductState({
+        orderId: order.id,
+        productId,
+        productStatus,
+      }),
+    )
+  }
+
   const handleOnClickEdit = (productId: string) => {
     setCurrentlyEditingProductId(productId)
   }
   const handleOnClickApprove = (productId: string) => {
-    handleUpdateProductStatus({})
+    handleUpdateProductState({
+      productId,
+      productStatus: productStatus.APPROVED.value,
+    })
   }
-  const handleOnClickCross = () => {}
+  const handleOnClickCross = (productId: string) => {
+    setProductToBeMarkedAsMissing(productId)
+  }
   const handleOnClickAddItem = () => {}
+  const handleMarkProductAsMissingAndUrgent = () => {
+    if (productToBeMarkedAsMissing) {
+      handleUpdateProductState({
+        productId: productToBeMarkedAsMissing,
+        productStatus: productStatus["Missing-Urgent"].value,
+      })
+      setProductToBeMarkedAsMissing(null)
+    }
+  }
+  const handleMarkProductAsMissing = () => {
+    if (productToBeMarkedAsMissing) {
+      handleUpdateProductState({
+        productId: productToBeMarkedAsMissing,
+        productStatus: productStatus.Missing.value,
+      })
+      setProductToBeMarkedAsMissing(null)
+    }
+  }
 
   return (
     <>
@@ -62,6 +104,13 @@ export default function OrderDetails({
           </div>
         </div>
       </div>
+      {productToBeMarkedAsMissing && (
+        <BottomPrompt
+          handleOnClickNo={handleMarkProductAsMissing}
+          handleOnClickYes={handleMarkProductAsMissingAndUrgent}
+          handleClose={() => setProductToBeMarkedAsMissing(null)}
+        />
+      )}
       {/* {currentlyEditingProductId && (
         <EditProduct
           onClose={() => setCurrentlyEditingProductId(null)}

@@ -12,24 +12,6 @@ function App() {
   const order = useAppSelector(selectOrder("1"))
   const dispatch = useAppDispatch()
 
-  const handleUpdateProductState = ({
-    orderId,
-    productId,
-    productStatus,
-  }: {
-    orderId: string
-    productId: string
-    productStatus: string
-  }) => {
-    dispatch(
-      updateProductState({
-        orderId,
-        productId,
-        productStatus,
-      }),
-    )
-  }
-
   // Fetch Details
   useEffect(() => {
     dispatch(fetchOrdersAsync())

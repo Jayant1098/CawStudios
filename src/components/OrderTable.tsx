@@ -1,6 +1,7 @@
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline"
 import { Order, Product } from "../redux/orderSlice"
 import { useMemo } from "react"
+import { productStatus } from "../constants"
 
 type Props = {
   order: Order
@@ -38,6 +39,96 @@ type ProductRowProps = {
   handleOnClickEdit: (productId: string) => void
   handleOnClickApprove: (productId: string) => void
   handleOnClickCross: (productId: string) => void
+}
+
+OrderTable.ProductRow = function ProductRow({
+  product,
+  handleOnClickEdit,
+  handleOnClickApprove,
+  handleOnClickCross,
+}: ProductRowProps) {
+  const status = useMemo(() => {
+    const statusWithLabelAndHex = Object.values(productStatus).find(
+      (op) => op.value === product.status,
+    )
+    return (
+      <span
+        className={`bg-[#f00] text-white w-min rounded-full px-2 py-2 text-xs`}
+      >
+        {statusWithLabelAndHex?.label}
+      </span>
+    )
+  }, [product.status])
+
+  return (
+    <tr key={product.id}>
+      {/* Product Name */}
+      <td className="py-2 pr-8">
+        <div className="flex items-center">
+          <img
+            src={product.imageSrc}
+            alt={product.imageAlt}
+            className="mr-6 h-16 w-16 rounded object-cover object-center"
+          />
+          <div>
+            <div className="font-medium text-gray-900">{product.name}</div>
+            <div className="mt-1 sm:hidden">{product.price}</div>
+          </div>
+        </div>
+      </td>
+      <td className="hidden py-2 pr-8 sm:table-cell">{product.brand}</td>
+      <td className="hidden py-2 pr-8 sm:table-cell">{`${product.price} / ${product.packageSize}`}</td>
+      <td className="hidden py-2 pr-8 sm:table-cell">
+        {product.quantity}
+        <span className="opacity-60">{` X ${product.packageSize}`}</span>
+      </td>
+      {/* Total */}
+      <td className="">sss</td>
+      <td className="hidden py-8 text-center sm:table-cell bg-slate-100">
+        {status}
+      </td>
+
+      <td className="hidden  sm:table-cell bg-slate-100">
+        <div className="flex w-full justify-between">
+          <CheckIcon
+            onClick={() => handleOnClickApprove(product.id)}
+            className={`w-5 h-5 font-bold cursor-pointer ${
+              // TODO: This can be passed as an prop value.
+              [
+                productStatus["APPROVED"].value,
+                productStatus["Price-Updated"].value,
+                productStatus.Other.value,
+                productStatus["Quantity-Updated"].value,
+                productStatus["Price-Quantity-Updated"].value,
+              ].includes(product.status)
+                ? "text-green-600"
+                : "opacity-70"
+            }`}
+          />
+          <XMarkIcon
+            onClick={() => handleOnClickCross(product.id)}
+            className={`w-5 h-5 cursor-pointer font-extrabold ${
+              // TODO: This can be passed as an prop value.
+              [
+                productStatus["Missing-Urgent"].value,
+                productStatus.Missing.value,
+              ].includes(product.status)
+                ? "text-red-600"
+                : ""
+            }`}
+          />
+          <span
+            className="cursor-pointer"
+            onClick={() => {
+              handleOnClickEdit(product.id)
+            }}
+          >
+            Edit
+          </span>
+        </div>
+      </td>
+    </tr>
+  )
 }
 
 OrderTable.Header = function Header() {
@@ -83,63 +174,5 @@ OrderTable.Header = function Header() {
         ></th>
       </tr>
     </thead>
-  )
-}
-OrderTable.ProductRow = function ProductRow({
-  product,
-  handleOnClickEdit,
-  handleOnClickApprove,
-  handleOnClickCross,
-}: ProductRowProps) {
-  const productStatus = useMemo(() => {
-    return product.status
-  }, [product.status])
-  return (
-    <tr key={product.id}>
-      {/* Product Name */}
-      <td className="py-2 pr-8">
-        <div className="flex items-center">
-          <img
-            src={product.imageSrc}
-            alt={product.imageAlt}
-            className="mr-6 h-16 w-16 rounded object-cover object-center"
-          />
-          <div>
-            <div className="font-medium text-gray-900">{product.name}</div>
-            <div className="mt-1 sm:hidden">{product.price}</div>
-          </div>
-        </div>
-      </td>
-      <td className="hidden py-2 pr-8 sm:table-cell">{product.brand}</td>
-      <td className="hidden py-2 pr-8 sm:table-cell">{`${product.price} / ${product.packageSize}`}</td>
-      <td className="hidden py-2 pr-8 sm:table-cell">
-        {product.quantity}
-        <span className="opacity-60">{` X ${product.packageSize}`}</span>
-      </td>
-      {/* Total */}
-      <td className="hidden py-2 pr-8 sm:table-cell">{productStatus}</td>
-
-      <td className="bg-slate-100">sss</td>
-      <td className="hidden  sm:table-cell bg-slate-100">
-        <div className="flex w-full justify-between">
-          <CheckIcon
-            onClick={() => handleOnClickApprove(product.id)}
-            className={"w-5 h-5 cursor-pointer"}
-          />
-          <XMarkIcon
-            onClick={() => handleOnClickCross(product.id)}
-            className="w-5 h-5 cursor-pointer"
-          />
-          <span
-            className="cursor-pointer"
-            onClick={() => {
-              handleOnClickEdit(product.id)
-            }}
-          >
-            Edit
-          </span>
-        </div>
-      </td>
-    </tr>
   )
 }

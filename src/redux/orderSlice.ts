@@ -29,7 +29,7 @@ export interface Product {
   href: string
   price: string
   quantity: number
-  status: string
+  status: number
   imageSrc: string
   imageAlt: string
   packageSize: string
@@ -66,7 +66,7 @@ export const orderSlice = createSlice({
       action: PayloadAction<{
         orderId: string
         productId: string
-        productStatus: string
+        productStatus: number
       }>,
     ) {
       const updatedState = state.value.map((order) => {
