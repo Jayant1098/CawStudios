@@ -8,6 +8,7 @@ type Props = {
   handleOnClickEdit: (productId: string) => void
   handleOnClickApprove: (productId: string) => void
   handleOnClickCross: (productId: string) => void
+  allowEditing: boolean
 }
 
 export default function OrderTable({
@@ -15,6 +16,7 @@ export default function OrderTable({
   handleOnClickEdit,
   handleOnClickApprove,
   handleOnClickCross,
+  allowEditing,
 }: Props) {
   return (
     <table className="mt-4 w-full text-gray-500 sm:mt-6">
@@ -23,6 +25,7 @@ export default function OrderTable({
       <tbody className="divide-y divide-gray-200 border-b border-gray-200 text-sm sm:border-t">
         {order.products.map((product) => (
           <OrderTable.ProductRow
+            allowEditing={allowEditing}
             product={product}
             handleOnClickEdit={handleOnClickEdit}
             handleOnClickApprove={handleOnClickApprove}
@@ -39,6 +42,7 @@ type ProductRowProps = {
   handleOnClickEdit: (productId: string) => void
   handleOnClickApprove: (productId: string) => void
   handleOnClickCross: (productId: string) => void
+  allowEditing: boolean
 }
 
 OrderTable.ProductRow = function ProductRow({
@@ -46,6 +50,7 @@ OrderTable.ProductRow = function ProductRow({
   handleOnClickEdit,
   handleOnClickApprove,
   handleOnClickCross,
+  allowEditing,
 }: ProductRowProps) {
   const status = useMemo(() => {
     const statusWithLabelAndHex = Object.values(productStatus).find(
@@ -53,7 +58,7 @@ OrderTable.ProductRow = function ProductRow({
     )
     return (
       <span
-        className={`bg-[#f00] text-white w-min rounded-full px-2 py-2 text-xs`}
+        className={` text-white w-min rounded-full px-2 py-2 text-xs ${statusWithLabelAndHex?.hex}`}
       >
         {statusWithLabelAndHex?.label}
       </span>
@@ -89,10 +94,10 @@ OrderTable.ProductRow = function ProductRow({
       </td>
 
       <td className="hidden  sm:table-cell bg-slate-100">
-        <div className="flex w-full justify-between">
+        <div className="flex w-full justify-around space-x-3">
           <CheckIcon
             onClick={() => handleOnClickApprove(product.id)}
-            className={`w-5 h-5 font-bold cursor-pointer ${
+            className={`w-5 h-5 font-bold  ${
               // TODO: This can be passed as an prop value.
               [
                 productStatus["APPROVED"].value,
@@ -102,8 +107,8 @@ OrderTable.ProductRow = function ProductRow({
                 productStatus["Price-Quantity-Updated"].value,
               ].includes(product.status)
                 ? "text-green-600"
-                : "opacity-70"
-            }`}
+                : "opacity-70 "
+            } ${allowEditing ? "cursor-pointer" : "cursor-not-allowed"}`}
           />
           <XMarkIcon
             onClick={() => handleOnClickCross(product.id)}
@@ -115,10 +120,10 @@ OrderTable.ProductRow = function ProductRow({
               ].includes(product.status)
                 ? "text-red-600"
                 : ""
-            }`}
+            } ${allowEditing ? "cursor-pointer" : "cursor-not-allowed"}`}
           />
           <span
-            className="cursor-pointer"
+            className={allowEditing ? "cursor-pointer" : "cursor-not-allowed"}
             onClick={() => {
               handleOnClickEdit(product.id)
             }}

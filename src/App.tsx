@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useLayoutEffect } from "react"
 import Navbar from "./components/Navbar"
 import OrderDetails from "./components/OrderDetails"
 import { useAppDispatch, useAppSelector } from "./redux/hooks"
@@ -13,7 +13,7 @@ function App() {
   const dispatch = useAppDispatch()
 
   // Fetch Details
-  useEffect(() => {
+  useLayoutEffect(() => {
     dispatch(fetchOrdersAsync())
   }, [])
 

@@ -1,12 +1,14 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import OrderStatus from "./OrderStatus"
 import SearchBar from "./SearchBar"
 import OrderTable from "./OrderTable"
-import { Order, updateProductState } from "../redux/orderSlice"
-import { PrinterIcon } from "@heroicons/react/24/outline"
+import { Order, approveOrder, updateProductState } from "../redux/orderSlice"
+import { ChevronRightIcon, PrinterIcon } from "@heroicons/react/24/outline"
 import { useAppDispatch } from "../redux/hooks"
-import { productStatus } from "../constants"
+import { orderStatus, productStatus } from "../constants"
 import BottomPrompt from "./BottomPrompt"
+import EditProduct from "./EditProduct"
+import OrderHeader from "./OrderHeader"
 // import EditProduct from "./components/EditProduct"
 
 export default function OrderDetails({ order }: { order: Order }) {
@@ -66,16 +68,30 @@ export default function OrderDetails({ order }: { order: Order }) {
     }
   }
 
+  const handleApproveOrder = () => {
+    dispatch(approveOrder({ orderId: order.id }))
+  }
+
+  const orderDetailsForHeader = useMemo(() => {
+    return {
+      Supplier: order.supplier,
+      "Shipping Date": new Date(order.shippingDate).toLocaleDateString(),
+      Total: order.total,
+      Category: "x å å  x",
+      Department: order.department,
+      "Order Status":
+        order.status === orderStatus.Approved.value
+          ? "Approved"
+          : "Awaiting Approval",
+    }
+  }, [order])
+
   return (
     <>
       <div>
+        <OrderHeader handleApproveOrder={handleApproveOrder} order={order} />
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:pb-24 ">
-          <div className="max-w-xl">
-            <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
-              Order history
-            </h1>
-          </div>
-          <OrderStatus />
+          <OrderStatus orderDetailsToRender={orderDetailsForHeader} />
 
           <div className="mt-16">
             <div className="space-y-20">
@@ -84,8 +100,9 @@ export default function OrderDetails({ order }: { order: Order }) {
                   <SearchBar />
                   <span className="flex  space-x-4 text-green-800">
                     <button
+                      disabled={order.status === orderStatus.Approved.value}
                       onClick={handleOnClickAddItem}
-                      className="border-green-800 border-2 font-bold  px-4 py-2 rounded-full text-xs"
+                      className="border-green-800 border-2 font-bold  px-4 py-2 rounded-full text-xs disabled:cursor-not-allowed"
                     >
                       Add Item
                     </button>
@@ -95,6 +112,7 @@ export default function OrderDetails({ order }: { order: Order }) {
 
                 <OrderTable
                   order={order}
+                  allowEditing={order.status === orderStatus.Awaiting.value}
                   handleOnClickEdit={handleOnClickEdit}
                   handleOnClickApprove={handleOnClickApprove}
                   handleOnClickCross={handleOnClickCross}
@@ -106,18 +124,21 @@ export default function OrderDetails({ order }: { order: Order }) {
       </div>
       {productToBeMarkedAsMissing && (
         <BottomPrompt
+          allowEditing={order.status === orderStatus.Awaiting.value}
+          productId={productToBeMarkedAsMissing}
+          orderId={order.id}
           handleOnClickNo={handleMarkProductAsMissing}
           handleOnClickYes={handleMarkProductAsMissingAndUrgent}
           handleClose={() => setProductToBeMarkedAsMissing(null)}
         />
       )}
-      {/* {currentlyEditingProductId && (
+      {currentlyEditingProductId && (
         <EditProduct
-          onClose={() => setCurrentlyEditingProductId(null)}
+          orderId={order.id}
           productId={currentlyEditingProductId}
-          orderId={"1"}
+          onClose={() => setCurrentlyEditingProductId(null)}
         />
-      )} */}
+      )}
     </>
   )
 }

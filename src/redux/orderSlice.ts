@@ -1,6 +1,7 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import { RootState } from "./store"
 import { getOrders } from "../api/orders"
+import { orderStatus } from "../constants"
 
 export interface OrderState {
   value: Order[]
@@ -19,6 +20,10 @@ export interface Order {
   datetime: Date
   invoiceHref: string
   total: string
+  status: number
+  supplier: string
+  department: string
+  shippingDate: number
   products: Product[]
 }
 
@@ -54,12 +59,20 @@ export const orderSlice = createSlice({
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
-    clear: (state) => {
+    clearOrders: (state) => {
       // Redux Toolkit allows us to write "mutating" logic in reducers. It
       // doesn't actually mutate the state because it uses the Immer library,
       // which detects changes to a "draft state" and produces a brand new
       // immutable state based off those changes
       state.value = []
+    },
+    approveOrder: (state, action: PayloadAction<{ orderId: string }>) => {
+      const updatedOrders = state.value.map((or) =>
+        or.id === action.payload.orderId
+          ? { ...or, status: orderStatus.Approved.value }
+          : or,
+      )
+      state.value = updatedOrders
     },
     updateProductState(
       state,
@@ -73,7 +86,6 @@ export const orderSlice = createSlice({
         if (order.id === action.payload.orderId) {
           let updatedProducts = order.products.map((product) => {
             if (product.id === action.payload.productId) {
-              // TODO: Add Product Status Map
               return { ...product, status: action.payload.productStatus }
             }
             return product
@@ -117,6 +129,6 @@ export const selectProductFromOrder =
       .find((order) => order.id === orderId)
       ?.products?.find((p) => p.id === productId)
 
-export const { updateProductState } = orderSlice.actions
+export const { updateProductState, approveOrder } = orderSlice.actions
 
 export default orderSlice.reducer
