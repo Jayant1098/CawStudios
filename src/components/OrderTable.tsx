@@ -96,7 +96,9 @@ OrderTable.ProductRow = function ProductRow({
       <td className="hidden  sm:table-cell bg-slate-100">
         <div className="flex w-full justify-around space-x-3">
           <CheckIcon
-            onClick={() => handleOnClickApprove(product.id)}
+            onClick={() =>
+              allowEditing ? handleOnClickApprove(product.id) : () => {}
+            }
             className={`w-5 h-5 font-bold  ${
               // TODO: This can be passed as an prop value.
               [
@@ -111,7 +113,9 @@ OrderTable.ProductRow = function ProductRow({
             } ${allowEditing ? "cursor-pointer" : "cursor-not-allowed"}`}
           />
           <XMarkIcon
-            onClick={() => handleOnClickCross(product.id)}
+            onClick={() =>
+              allowEditing ? handleOnClickCross(product.id) : () => {}
+            }
             className={`w-5 h-5 cursor-pointer font-extrabold ${
               // TODO: This can be passed as an prop value.
               [
@@ -125,7 +129,7 @@ OrderTable.ProductRow = function ProductRow({
           <span
             className={allowEditing ? "cursor-pointer" : "cursor-not-allowed"}
             onClick={() => {
-              handleOnClickEdit(product.id)
+              allowEditing ? handleOnClickEdit(product.id) : () => {}
             }}
           >
             Edit
