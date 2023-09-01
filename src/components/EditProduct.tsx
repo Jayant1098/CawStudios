@@ -112,11 +112,13 @@ export default function EditProduct({ productId, orderId, onClose }) {
                         <input
                           type="number"
                           value={formData.quantity}
+                          // @ts-ignore
                           placeholder={quantity}
                           onChange={handleChangeQuantity}
                         />
                         <span className="font-medium">
                           {/* Choose whatever is filled in the form. */}
+                          {/*  @ts-ignore */}
                           {(formData.price || price) *
                             (formData.quantity || quantity)}
                         </span>
