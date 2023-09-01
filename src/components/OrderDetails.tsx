@@ -124,7 +124,6 @@ export default function OrderDetails({ order }: { order: Order }) {
       </div>
       {productToBeMarkedAsMissing && (
         <BottomPrompt
-          allowEditing={order.status === orderStatus.Awaiting.value}
           productId={productToBeMarkedAsMissing}
           orderId={order.id}
           handleOnClickNo={handleMarkProductAsMissing}
